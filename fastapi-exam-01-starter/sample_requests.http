@@ -1,0 +1,70 @@
+### Okwu Couriers API: sample requests
+### Works with the VS Code "REST Client" extension, or copy into Postman / Thunder Client.
+### You can also test everything at http://127.0.0.1:8000/docs
+
+@base = http://127.0.0.1:8000
+@token = paste-your-access-token-here
+
+### Health
+GET {{base}}/health
+
+### Register
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{"name": "Ada Obi", "email": "ada@example.com", "password": "StrongPass1"}
+
+### Login (copy access_token into @token above)
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{"email": "ada@example.com", "password": "StrongPass1"}
+
+### Who am I
+GET {{base}}/auth/me
+Authorization: Bearer {{token}}
+
+### Create parcel (expect price 3700)
+POST {{base}}/parcels
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"sender_name": "Ada Obi", "recipient_name": "Chinedu Okafor", "recipient_phone": "08031234567",
+ "origin_city": "Awka", "destination_city": "Enugu", "weight_kg": 2.3}
+
+### Invalid parcel (expect 422)
+POST {{base}}/parcels
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"sender_name": "Ada Obi", "recipient_name": "Chinedu Okafor", "recipient_phone": "12345",
+ "origin_city": "Lagos", "destination_city": "Enugu", "weight_kg": 0}
+
+### List my parcels
+GET {{base}}/parcels?page=1&size=10
+Authorization: Bearer {{token}}
+
+### Get one parcel
+GET {{base}}/parcels/1
+Authorization: Bearer {{token}}
+
+### Change status (allowed)
+PATCH {{base}}/parcels/1/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"status": "PICKED_UP", "note": "Picked up at Awka office"}
+
+### Change status (not allowed, expect 409)
+PATCH {{base}}/parcels/1/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"status": "DELIVERED"}
+
+### Delete (only while CREATED)
+DELETE {{base}}/parcels/1
+Authorization: Bearer {{token}}
+
+### Public tracking (no token; replace with a real code)
+GET {{base}}/track/OKW-XXXXXXXX
